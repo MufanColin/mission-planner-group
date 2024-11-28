@@ -7,15 +7,15 @@ Contains all global variables specific to simulation
 xMax = 1000
 yMax = 1000
 seedValue = 1
-numNodes = 200
+numNodes = 200 # 检查点数量
 numGenerations = 70
 # size of population
-populationSize = 100
+populationSize = 100 
 mutationRate = 0.02
 tournamentSize = 10
 elitism = True
 # number of trucks
-numTrucks = 10
+numTrucks = 10# 无人机数量
 
 def random_range(n, total):
     """Return a randomly chosen list of n positive integers summing to total.
@@ -27,6 +27,9 @@ def random_range(n, total):
 # Randomly distribute number of dustbins to subroutes
 # Maximum and minimum values are maintained to reach optimal result
 def route_lengths():
+    '''
+    return:list[int] numTrucks integers(rout_legth) suming to upper
+    '''
     upper = (numNodes + numTrucks - 1)
     fa = upper/numTrucks*1.6 # max route length
     fb = upper/numTrucks*0.6 # min route length
