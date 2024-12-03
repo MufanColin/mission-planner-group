@@ -19,15 +19,17 @@ class AntColony(object):
         shortest_path = None
         all_time_shortest_path = ("placeholder", np.inf)
         all_ant_paths = []
+        shortest_distances_per_iteration = []
         for i in range(self.n_iterations):
             all_paths = self.gen_all_paths()
             all_ant_paths.extend([path for path, dist in all_paths])  # Collect all paths
             self.spread_pheromone(all_paths, self.n_best, shortest_path=shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
+            shortest_distances_per_iteration.append(shortest_path[1])  # Record the shortest distance of this iteration
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path            
             self.pheromone = self.pheromone * self.decay            
-        return all_time_shortest_path, all_ant_paths
+        return all_time_shortest_path, all_ant_paths, shortest_distances_per_iteration
 
     def spread_pheromone(self, all_paths, n_best, shortest_path):
         sorted_paths = sorted(all_paths, key=lambda x: x[1])

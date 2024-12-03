@@ -9,17 +9,12 @@ np.random.seed(seedValue)
 random.seed(seedValue)
 
 numNodes = 200
-
-def path_edges_to_nodes(path_edges):
-    path_nodes = [path_edges[0][0]]
-    for edge in path_edges:
-        path_nodes.append(edge[1])
-    return path_nodes
+max_x, max_y = 1000, 1000
 
 # Add Dustbins with x and y coordinates
 for i in range(numNodes):
-    x = np.random.rand()  # Replace with actual x coordinate generation
-    y = np.random.rand()  # Replace with actual y coordinate generation
+    x = max_x * np.random.rand()  # Replace with actual x coordinate generation
+    y = max_y * np.random.rand()  # Replace with actual y coordinate generation
     RouteManager.addDustbin(Dustbin(x, y))  # Ensure Dustbin class accepts coordinates
 
 # Collect dustbin coordinates
@@ -48,7 +43,22 @@ beta = 2
 ant_colony = AntColony(distance_matrix, n_ants, n_best, n_iterations, decay, alpha, beta)
 
 # Run ACO
-all_time_shortest_path, all_ant_paths = ant_colony.run()
+all_time_shortest_path, all_ant_paths, shortest_distances = ant_colony.run()
+
+# Plot convergence graph
+fig = plt.figure()
+plt.plot(range(ant_colony.n_iterations), shortest_distances, 'r-')
+plt.xlabel('Iterations')
+plt.ylabel('Shortest Path Distance')
+plt.title('Ant Colony Optimization Convergence')
+plt.show()
+
+# Helper function to convert path edges to nodes
+def path_edges_to_nodes(path_edges):
+    path_nodes = [path_edges[0][0]]
+    for edge in path_edges:
+        path_nodes.append(edge[1])
+    return path_nodes
 
 # Convert all ants' paths from edges to nodes
 all_ant_node_paths = [path_edges_to_nodes(path) for path in all_ant_paths]
