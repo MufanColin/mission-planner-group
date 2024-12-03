@@ -5,19 +5,6 @@ from numpy.random import choice as np_choice
 class AntColony(object):
 
     def __init__(self, distances, n_ants, n_best, n_iterations, decay, alpha=1, beta=1):
-        """
-        Args:
-            distances (2D numpy.array): Square matrix of distances. Diagonal is assumed to be np.inf.
-            n_ants (int): Number of ants running per iteration
-            n_best (int): Number of best ants who deposit pheromone
-            n_iteration (int): Number of iterations
-            decay (float): Rate it which pheromone decays. The pheromone value is multiplied by decay, so 0.95 will lead to decay, 0.5 to much faster decay.
-            alpha (int or float): exponenet on pheromone, higher alpha gives pheromone more weight. Default=1
-            beta (int or float): exponent on distance, higher beta give distance more weight. Default=1
-
-        Example:
-            ant_colony = AntColony(german_distances, 100, 20, 2000, 0.95, alpha=1, beta=2)          
-        """
         self.distances  = distances
         self.pheromone = np.ones(self.distances.shape) / len(distances)
         self.all_inds = range(len(distances))
@@ -31,23 +18,24 @@ class AntColony(object):
     def run(self):
         shortest_path = None
         all_time_shortest_path = ("placeholder", np.inf)
+        all_ant_paths = []
         for i in range(self.n_iterations):
             all_paths = self.gen_all_paths()
-            self.spread_pheronome(all_paths, self.n_best, shortest_path=shortest_path)
+            all_ant_paths.extend([path for path, dist in all_paths])  # Collect all paths
+            self.spread_pheromone(all_paths, self.n_best, shortest_path=shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
-            print (shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path            
             self.pheromone = self.pheromone * self.decay            
-        return all_time_shortest_path
+        return all_time_shortest_path, all_ant_paths
 
-    def spread_pheronome(self, all_paths, n_best, shortest_path):
+    def spread_pheromone(self, all_paths, n_best, shortest_path):
         sorted_paths = sorted(all_paths, key=lambda x: x[1])
         for path, dist in sorted_paths[:n_best]:
             for move in path:
                 self.pheromone[move] += 1.0 / self.distances[move]
 
-    def gen_path_dist(self, path):
+    def gen_path_distance(self, path):
         total_dist = 0
         for ele in path:
             total_dist += self.distances[ele]
@@ -57,7 +45,7 @@ class AntColony(object):
         all_paths = []
         for i in range(self.n_ants):
             path = self.gen_path(0)
-            all_paths.append((path, self.gen_path_dist(path)))
+            all_paths.append((path, self.gen_path_distance(path)))
         return all_paths
 
     def gen_path(self, start):
@@ -70,7 +58,7 @@ class AntColony(object):
             path.append((prev, move))
             prev = move
             visited.add(move)
-        path.append((prev, start)) # going back to where we started    
+        path.append((prev, start))  # going back to where we started    
         return path
 
     def pick_move(self, pheromone, dist, visited):
@@ -80,6 +68,5 @@ class AntColony(object):
         row = pheromone ** self.alpha * (( 1.0 / dist) ** self.beta)
 
         norm_row = row / row.sum()
-        move = np_choice(self.all_inds, 1, p=norm_row)[0]
+        move = np.random.choice(self.all_inds, 1, p=norm_row)[0]
         return move
-
