@@ -17,15 +17,14 @@ class GA:
         if elitism:
             newPopulation.saveRoute(0, pop.getFittest())
             elitismOffset = 1
-
+        
         # Performs tournament selection followed by crossover to generate child
         for i in range(elitismOffset, newPopulation.populationSize):
             parent1 = cls.tournamentSelection(pop)
             parent2 = cls.tournamentSelection(pop)
             child = cls.crossover(parent1, parent2)
             # Adds child to next generation
-            newPopulation.saveRoute(i, child)
-
+            newPopulation.saveRoute(i, child) 
 
         # Performs Mutation
         for i in range(elitismOffset, newPopulation.populationSize):
@@ -89,14 +88,14 @@ class GA:
         #generate replacement range for 1
         route1startPos = 0
         route1lastPos = 0
-        while route1startPos >= route1lastPos or route1startPos == 1:
+        while route1startPos > route1lastPos or route1startPos == 1:
             route1startPos = random.randint(1, route.routeLengths[index1] - 1)
             route1lastPos = random.randint(1, route.routeLengths[index1] - 1)
 
         #generate replacement range for 2
         route2startPos = 0
         route2lastPos = 0
-        while route2startPos >= route2lastPos or route2startPos == 1:
+        while route2startPos > route2lastPos or route2startPos == 1:
             route2startPos = random.randint(1, route.routeLengths[index2] - 1)
             route2lastPos= random.randint(1, route.routeLengths[index2] - 1)
 

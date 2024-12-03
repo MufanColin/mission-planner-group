@@ -54,7 +54,7 @@ class AntColony(object):
         self.pheromone*=self.decay
         for path, dist in sorted_paths[:n_best]:# n_best ants spread pheromone
             for move in path:
-                self.pheromone[move] += 1.0 / self.distances[move]
+                self.pheromone[move] += 1.0 / self.distances[move]#BUG
 
     def gen_path_dist(self, path):
         total_dist = 0

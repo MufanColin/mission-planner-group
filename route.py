@@ -16,7 +16,6 @@ class Route:
 
         for i in range(numTrucks):
             self.route.append([])
-
         # fitness value and total distance of all routes
         self.fitness = 0
         self.distance = 0

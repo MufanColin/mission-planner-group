@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import progressbar
 from galogic import * 
-pbar = progressbar.ProgressBar()
+random.seed(seedValue)
+pbar = progressbar.ProgressBar(maxval=numGenerations)
 
 # Add Dustbins
 for i in range(numNodes):
     RouteManager.addDustbin(Dustbin())
 
-random.seed(seedValue)
 yaxis = [] # Fittest value (distance)
 xaxis = [] # Generation count
 
@@ -16,6 +16,7 @@ globalRoute = pop.getFittest()
 print ('Initial minimum distance: ' + str(globalRoute.getDistance()))
 
 # Start evolving
+
 for i in pbar(range(numGenerations)):
     pop = GA.evolvePopulation(pop)
     localRoute = pop.getFittest()
