@@ -1,10 +1,12 @@
 import random as rn
 import numpy as np
 import progressbar
+import time
+import multiprocessing
 
 class MultiAntColony(object):
 
-    def __init__(self, distances, n_ants, n_best, n_iterations, decay, alpha=1, beta=1, p0=0.1):
+    def __init__(self, distances, n_ants, n_best, n_iterations, n_accumulate, decay, alpha=1, beta=1, p0=0.1):
         """
         Args:
             distances (2D numpy.array): Square matrix of distances. Diagonal is assumed to be np.inf.
@@ -26,6 +28,7 @@ class MultiAntColony(object):
         self.n_ants = n_ants
         self.n_iterations = n_iterations
         self.decay = decay# pheromone decay
+        self.n_accumulate = n_accumulate
         self.alpha = alpha
         self.beta = beta
         self.p0 = p0
@@ -33,30 +36,34 @@ class MultiAntColony(object):
     def run(self):
         '''
         Returns:
-            final_shortest_path_set (tuple): (path_set, path_set_len)
+            global_shortest_pathset (tuple): (path_set, path_set_len)
 
-            shortest_path_record (list): list[(iter_idx, path_len)]
+            shortest_pathset_record (list): list[(iter_idx, path_len)]
             
         '''
-        shortest_path = None
-        all_time_shortest_paths = ("placeholder", np.inf)
-        shortest_path_record = []
+        global_shortest_pathset = ("placeholder", np.inf)
+        shortest_pathset_record = []
         pbar = progressbar.ProgressBar(maxval=self.n_iterations)(range(self.n_iterations))
         for i in pbar:
-            all_paths = self.gen_all_paths()# list[(path, path_len)] path: list[(node_i, node_{i+1})]
-            self.spread_pheronome(all_paths)
-            # shortest_path = min(all_paths, key=lambda x: x[1])
-            shortest_path = (all_paths, self.calculate_pathset_len(all_paths))
-            if shortest_path[1] < all_time_shortest_paths[1]:
-                all_time_shortest_paths = shortest_path       
-            shortest_path_record.append((i, all_time_shortest_paths[1]))
-        return all_time_shortest_paths, shortest_path_record
+            pathset_l = []
+            # pool = multiprocessing.Pool()
+            # pathset_l = pool.starmap(self.gen_pathset, [() for _ in range(self.n_accumulate)])
+            # pathset_l = [pool.apply(self.gen_pathset ) for _ in range(self.n_accumulate) ]
+            # pathset_l = pool.map(self.gen_pathset, [None for _ in range(self.n_accumulate)])
+            for j in range(self.n_accumulate):
+                pathset_l.append(self.gen_pathset())
+            self.spread_pheronome(pathset_l)
+            shortest_pathset = min(pathset_l, key=lambda x: x[1])
+            if shortest_pathset[1] < global_shortest_pathset[1]:
+                global_shortest_pathset = shortest_pathset       
+            shortest_pathset_record.append((i, global_shortest_pathset[1]))
+        return global_shortest_pathset, shortest_pathset_record
 
-    def spread_pheronome(self, all_paths):
-        all_paths_length = self.calculate_pathset_len(all_paths)
-        for path in all_paths:
-            for move in path:
-                self.pheromone[move] += 1.0/all_paths_length
+    def spread_pheronome(self, all_pathset):
+        for pathset in all_pathset:
+            for path in pathset[0]:
+                for move in path:
+                    self.pheromone[move] += 1.0/pathset[1]
 
     def calculate_path_len(self, path):
         s = 0
@@ -72,11 +79,11 @@ class MultiAntColony(object):
         # s
         return s
 
-    def gen_all_paths(self):
+    def gen_pathset(self):
         all_paths = []
         paths = self.gen_paths(0)
         # all_paths = [(path, self.calculate_path_len(path)) for path in paths]
-        return paths
+        return (paths, self.calculate_pathset_len(paths))
 
 
     def gen_paths(self, start):
