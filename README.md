@@ -3,7 +3,7 @@ Here graph is covered using different agents having different routes.
 
 Routes only intersect at initial node.
 
-main.py 作为 Baseline.
+baseline.py 作为 Baseline.
 
 共有`numTrucks`个无人机（truck），`numNodes`个检查点(dustbin)
 第1个dustbin(index=0)是基地。

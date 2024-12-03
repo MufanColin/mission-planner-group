@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import progressbar
+
 from ant_colony import AntColony  # Ensure this imports your AntColony class
 from galogic import *  # Assuming Dustbin and RouteManager are defined here
 
@@ -27,7 +27,7 @@ for i in range(num_dustbins):
 # Ant Colony Optimization parameters
 n_ants = 30
 n_best = 10
-n_iterations = 10
+n_iterations = 100
 decay = 0.95
 alpha = 1
 beta = 2
@@ -36,18 +36,20 @@ beta = 2
 ant_colony = AntColony(distance_matrix, n_ants, n_best, n_iterations, decay, alpha, beta)
 
 # Lists to track progress
-yaxis = []  # Shortest distance in each iteration
-xaxis = []  # Iteration count
+# yaxis = []  # Shortest distance in each iteration
+# xaxis = []  # Iteration count
 
 # Run ACO with progress bar
-pbar = progressbar.ProgressBar(maxval=n_iterations)
+
 shortest_path = ("placeholder", np.inf)
-for i in pbar(range(n_iterations)):
-    current_shortest = ant_colony.run()
-    if current_shortest[1] < shortest_path[1]:
-        shortest_path = current_shortest
-    yaxis.append(shortest_path[1])
-    xaxis.append(i)
+# for i in pbar(range(n_iterations)):
+#     current_shortest = ant_colony.run()
+#     if current_shortest[1] < shortest_path[1]:
+#         shortest_path = current_shortest
+#     yaxis.append(shortest_path[1])
+#     xaxis.append(i)
+shortest_path, record = ant_colony.run()
+xaxis, yaxis = [i[0] for i in record], [i[1] for i in record]
 
 print('Global minimum distance:', shortest_path[1])
 print('Final Path:', shortest_path[0])
