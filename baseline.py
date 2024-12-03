@@ -30,4 +30,8 @@ print ('Final Route: ' + globalRoute.toString())
 fig = plt.figure()
 
 plt.plot(xaxis, yaxis, 'r-')
+plt.xlabel('Iterations')
+plt.ylabel('Shortest Path Distance')
+plt.title('Ant Colony Optimization')
+fig.savefig(f'baseline_nodes-{numNodes}_drones-{numTrucks}.png')
 plt.show()
