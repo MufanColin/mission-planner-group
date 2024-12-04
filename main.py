@@ -72,4 +72,9 @@ if __name__=='__main__':
     plt.ylabel('Shortest Path Distance')
     plt.title('Ant Colony Optimization')
     fig.savefig(f'multiantcolony_nodes-{numNodes}_drones-{numTrucks}.png')
+    with open(f'multiantcolony_nodes-{numNodes}_drones-{numTrucks}.txt', 'w') as f:
+        print(f"Global minimum distance: {shortest_pathset[1]}", file=f)
+        print('Final Path Seq len:', [len(shortest_pathset[0][i]) for i in range(len(shortest_pathset[0]))], file=f)
+        print('Final Path:', final_paths)
+
     plt.show()
